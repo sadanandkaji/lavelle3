@@ -68,17 +68,13 @@ export default function Navbar() {
           
           {/* --- BRANDING: LARGE LOGO --- */}
           {/* Adjusted margins and scales for a perfect fit */}
-          <Link href="/" className="relative h-20 w-48 md:h-28 md:w-80 transition-all duration-500 -ml-4 md:-ml-10">
+          <Link href="/" className="relative h-40 w-48 md:h-42 md:w-60 transition-all duration-500 -ml-12 md:-ml-10">
             <Image
               src="/images/lavelleventurelogo.png"
               alt="Lavelle Venture"
               fill
               sizes="(max-width: 768px) 200px, 320px"
-              className={`object-contain transition-all duration-500 ${
-                // Mobile: Always Black Logo (on white) 
-                // Desktop: White on transparent, Black on Scrolled white
-                (isScrolled || isSolidPage) ? "" : ""
-              }`}
+              className="object-contain transition-all duration-500"
               priority
             />
           </Link>
