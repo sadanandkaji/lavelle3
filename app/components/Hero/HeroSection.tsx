@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import HeroCards from "./HeroCards";
 import HeroIntro from "./HeroIntro";
-import HeroGoldText from "./HeroGoldText";
 
 export default function HeroSection() {
   const gardenCardRef = useRef<HTMLDivElement | null>(null);
@@ -63,13 +62,7 @@ export default function HeroSection() {
         poolRef={poolCardRef}
       />
 
-      {/* GOLD SECTION */}
-      <div className="py-16">
-        <HeroGoldText
-          goldTextRef={goldTextRef}
-          goldBgRef={goldBgRef}
-        />
-      </div>
+    
     </section>
   );
 }
