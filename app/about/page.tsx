@@ -130,7 +130,7 @@ export default function AboutPage() {
 
             <div className="space-y-4 text-center md:text-left max-w-sm">
               <h4 className="text-xl md:text-2xl font-serif">
-                Mr. Mehboob Pasha
+                Mr. Mehboob Pasha 
               </h4>
               <p className="text-neutral-500 font-light italic">
                 "We don't just develop land; we curate environments where the
@@ -164,7 +164,7 @@ export default function AboutPage() {
 
             <div className="space-y-4 text-center md:text-left max-w-sm">
               <h4 className="text-xl md:text-2xl font-serif">
-                Dr. Anjum Azhar
+                Dr. Anjum Azhar 
               </h4>
               <p className="text-neutral-500 font-light italic">
                 "Architecture must serve as a bridge between ancient wisdom and modern precision."
