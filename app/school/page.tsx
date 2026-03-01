@@ -78,11 +78,10 @@ export default function AmenitiesPage() {
         </div>
       </section>
 
-      {/* --- INTEGRATED WELLNESS SECTION --- */}
+      {/* --- INTEGRATED WELLNESS SECTION (VIDYA MANDIRA) --- */}
       <section className="max-w-7xl mx-auto px-6 py-32 md:py-48">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           
-          {/* Text Content - Sticky on Desktop */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -98,13 +97,10 @@ export default function AmenitiesPage() {
               <p>
                 The amenities at Eshwari Siddha Peeta are designed to facilitate the "balanced life." While the Mandira serves as a sanctuary for intellectual inquiry and traditional values, our sports facilities provide the outlet for physical discipline.
               </p>
-              <p>
-                We believe that a sharp mind requires a strong vessel. Every facility is geared toward the holistic evolution of the individual—combining Vedic wisdom with modern excellence.
-              </p>
             </div>
           </motion.div>
 
-          {/* VERTICAL IMAGE STACK (ONE BELOW ANOTHER) */}
+          {/* VERTICAL IMAGE STACK (CLICKABLE) */}
           <div className="flex flex-col gap-8 md:gap-12">
             {[
               { src: "/images/vidyamadirimage.jpg", label: "The Sacred Entrance" },
@@ -134,6 +130,32 @@ export default function AmenitiesPage() {
         </div>
       </section>
 
+      {/* --- ATHLETICS VISUAL SECTION (CLICKABLE) --- */}
+      <section className="px-6 pb-32">
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2 }}
+          className="max-w-7xl mx-auto relative group cursor-pointer overflow-hidden rounded-sm shadow-2xl"
+          onClick={() => setFullScreenImg("/images/sport.jpg")}
+        >
+          <img 
+            src="/images/sport.jpg" 
+            alt="Prāṇa Athletics Facilities" 
+            className="w-full h-[50vh] md:h-[80vh] object-cover transition-transform duration-[3s] group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
+          <div className="absolute inset-0 flex items-center justify-center">
+             <div className="text-center">
+                <p className="text-[10px] tracking-[0.8em] text-white uppercase font-bold mb-4">Prāṇa Athletics</p>
+                <h3 className="text-4xl md:text-6xl font-serif italic text-white">Vitality in Motion</h3>
+                <span className="mt-6 inline-block text-[9px] tracking-widest text-white/60 uppercase border border-white/20 px-4 py-2 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">Tap to expand</span>
+             </div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* --- AMENITIES GRID --- */}
       <section className="bg-white py-32 border-y border-neutral-100 px-6">
         <div className="max-w-7xl mx-auto">
@@ -158,37 +180,6 @@ export default function AmenitiesPage() {
         </div>
       </section>
 
-      {/* --- QUOTE BANNER --- */}
-      <section className="py-48 text-center relative overflow-hidden bg-white">
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03]">
-           <span className="text-[20vw] font-serif italic text-neutral-900">Sādhanā</span>
-        </div>
-        <div className="max-w-4xl mx-auto px-6 relative z-10 space-y-12">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-serif italic text-neutral-900 leading-tight"
-          >
-            "A values-based foundation for a purposeful life."
-          </motion.h2>
-          <div className="h-px w-24 bg-[#B38728]/30 mx-auto" />
-        </div>
-      </section>
-
-      {/* --- NAVIGATION FOOTER --- */}
-      <section className="py-32 text-center border-t border-neutral-50 bg-[#FBFBFA]">
-        <Link 
-          href="/theatre"
-          className="inline-flex flex-col items-center group"
-        >
-          <span className="text-[10px] tracking-[0.4em] text-neutral-400 uppercase mb-4 group-hover:text-[#B38728] transition-colors">Return to Culture</span>
-          <span className="text-4xl md:text-5xl font-serif italic text-neutral-800 border-b border-transparent group-hover:border-[#B38728] pb-2 transition-all duration-500">
-            Amphitheater
-          </span>
-        </Link>
-      </section>
-
       {/* --- FULL SCREEN OVERLAY --- */}
       <AnimatePresence>
         {fullScreenImg && (
@@ -196,15 +187,12 @@ export default function AmenitiesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-neutral-950/98 flex items-center justify-center p-4 md:p-12"
+            onClick={() => setFullScreenImg(null)}
+            className="fixed inset-0 z-[100] bg-neutral-950/98 flex items-center justify-center p-4 md:p-12 cursor-zoom-out"
           >
-            <button 
-                onClick={() => setFullScreenImg(null)}
-                className="absolute top-8 right-8 text-white z-[110] flex items-center gap-4 group"
-            >
-                <span className="text-[10px] tracking-[0.4em] uppercase opacity-0 group-hover:opacity-100 transition-all duration-300">Close</span>
-                <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center group-hover:border-white group-hover:rotate-90 transition-all duration-500">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+            <button className="absolute top-8 right-8 text-white z-[110] group">
+                <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center group-hover:border-white transition-all duration-300">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                 </div>
@@ -222,6 +210,16 @@ export default function AmenitiesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* --- NAVIGATION FOOTER --- */}
+      <section className="py-32 text-center border-t border-neutral-50 bg-[#FBFBFA]">
+        <Link href="/theatre" className="inline-flex flex-col items-center group">
+          <span className="text-[10px] tracking-[0.4em] text-neutral-400 uppercase mb-4 group-hover:text-[#B38728] transition-colors">Return to Culture</span>
+          <span className="text-4xl md:text-5xl font-serif italic text-neutral-800 border-b border-transparent group-hover:border-[#B38728] pb-2 transition-all duration-500">
+            Amphitheater
+          </span>
+        </Link>
+      </section>
     </main>
   );
 }

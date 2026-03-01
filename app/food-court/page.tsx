@@ -1,9 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 export default function FoodCourtPage() {
+  const [fullScreenImg, setFullScreenImg] = useState<string | null>(null);
+
   const principles = [
     { title: "Sattvic Cuisine", label: "Purity", desc: "Fresh, seasonal, and vegetarian offerings prepared to enhance mental clarity and physical vitality." },
     { title: "Organic Sourcing", label: "Earth", desc: "Ingredients sourced directly from our farm and local sustainable growers, ensuring a farm-to-table experience." },
@@ -26,7 +29,6 @@ export default function FoodCourtPage() {
           Your browser does not support the video tag.
         </video>
         
-        {/* Soft Light Overlay */}
         <div className="absolute inset-0 bg-white/10" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
@@ -51,7 +53,6 @@ export default function FoodCourtPage() {
           </p>
         </div>
 
-        {/* Scroll Indicator */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
           <motion.div 
             animate={{ y: [0, 15, 0] }}
@@ -79,11 +80,35 @@ export default function FoodCourtPage() {
               At the Annapūrṇā Food Court, we view the act of eating as a sacred ritual. Named after the Goddess of Nourishment, this space is dedicated to the principle that the quality of our food determines the quality of our thoughts.
             </p>
             <p>
-              The architecture blends open-air connectivity with a refined, modern aesthetic, allowing guests to dine in harmony with the surrounding nature and the spiritual vibrations of the Peeta.
+              The architecture blends open-air connectivity with a refined, modern aesthetic, allowing guests to dine in harmony with nature.
             </p>
           </div>
+        </motion.div>
+      </section>
 
-          <div className="h-px w-24 bg-neutral-100 mx-auto mt-16" />
+      {/* --- FEATURED IMAGE (CLICKABLE FULL SCREEN) --- */}
+      <section className="px-6 pb-32">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2 }}
+          className="max-w-7xl mx-auto overflow-hidden rounded-sm shadow-2xl cursor-pointer group relative"
+          onClick={() => setFullScreenImg("/images/foodcourt.jpg")}
+        >
+          <img 
+            src="/images/foodcourt.jpg" 
+            alt="Annapūrṇā Food Court Architecture" 
+            className="w-full h-[50vh] md:h-[80vh] object-cover hover:scale-105 transition-transform duration-[3s] ease-out"
+          />
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-colors duration-500" />
+          
+          {/* Visual Hint for Users */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+            <span className="text-[9px] tracking-widest text-white/80 uppercase bg-black/20 backdrop-blur-md px-4 py-2 rounded-full md:opacity-0 group-hover:opacity-100 transition-opacity">
+              Click to Expand
+            </span>
+          </div>
         </motion.div>
       </section>
 
@@ -111,30 +136,40 @@ export default function FoodCourtPage() {
         </div>
       </section>
 
-      {/* --- QUOTE BANNER --- */}
-      <section className="py-48 text-center relative overflow-hidden bg-white">
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03]">
-           <span className="text-[20vw] font-serif italic">Prasāda</span>
-        </div>
-        <div className="max-w-4xl mx-auto px-6 relative z-10 space-y-12">
-          <motion.h2 
+      {/* --- FULL SCREEN OVERLAY --- */}
+      <AnimatePresence>
+        {fullScreenImg && (
+          <motion.div 
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-serif italic text-neutral-900 leading-tight"
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setFullScreenImg(null)}
+            className="fixed inset-0 z-[100] bg-neutral-950/98 flex items-center justify-center p-4 md:p-12 cursor-zoom-out"
           >
-            "When the food is pure, the mind becomes pure."
-          </motion.h2>
-          <div className="h-px w-24 bg-[#B38728]/30 mx-auto" />
-        </div>
-      </section>
+            <button className="absolute top-8 right-8 text-white z-[110] group">
+                <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center group-hover:border-white transition-all duration-300">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            </button>
+
+            <motion.img 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 120 }}
+              src={fullScreenImg} 
+              className="max-w-full max-h-full object-contain"
+              alt="Full View"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* --- NAVIGATION FOOTER --- */}
       <section className="py-32 text-center border-t border-neutral-50 bg-[#FBFBFA]">
-        <Link 
-          href="/wedding-hall"
-          className="inline-flex flex-col items-center group"
-        >
+        <Link href="/wedding-hall" className="inline-flex flex-col items-center group">
           <span className="text-[10px] tracking-[0.4em] text-neutral-400 uppercase mb-4 group-hover:text-[#B38728] transition-colors">Return to Celebration</span>
           <span className="text-4xl md:text-5xl font-serif italic text-neutral-800 border-b border-transparent group-hover:border-[#B38728] pb-2 transition-all duration-500">
             Wedding Hall
