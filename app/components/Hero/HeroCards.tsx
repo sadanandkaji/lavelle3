@@ -17,7 +17,7 @@ export default function HeroCards({
   const cards = [
     {
       ref: gardenRef,
-      sectionTitle: "yogini temple",
+      sectionTitle: "peetha temple",
       category: "Exterior Architecture",
       img: "/images/templefarview.png",
       href: "/64-yogini-temple", // Updated Route

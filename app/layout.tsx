@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
@@ -22,7 +23,7 @@ const geistMono = Geist_Mono({
 ========================= */
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lavelleventure.com"), // 🔁 change if needed
+  metadataBase: new URL("https://lavelleventure.com"),
 
   title: {
     default: "Lavelle Venture | Premium Real Estate in Bangalore",
@@ -46,40 +47,29 @@ export const metadata: Metadata = {
   creator: "Lavelle Venture",
   publisher: "Lavelle Venture",
 
-  referrer: "origin-when-cross-origin",
-
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-
   robots: {
     index: true,
     follow: true,
-    nocache: false,
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
 
-  verification: {
-    google: "YOUR_GOOGLE_VERIFICATION_CODE", // 🔁 add from Search Console
-  },
-
   icons: {
-    icon: "/images/iconlogo.png",
-    shortcut: "/images/iconlogo.png",
+    icon: [
+      { url: "/favicon.ico" }, // MUST exist in /public
+      { url: "/images/iconlogo.png", type: "image/png", sizes: "32x32" },
+      { url: "/images/iconlogo.png", type: "image/png", sizes: "192x192" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/images/iconlogo.png",
   },
 
   openGraph: {
     type: "website",
-    locale: "en_US",
     url: "https://lavelleventure.com",
     siteName: "Lavelle Venture",
     title: "Lavelle Venture | Premium Real Estate in Bangalore",
@@ -87,7 +77,7 @@ export const metadata: Metadata = {
       "Discover luxury villas and premium real estate projects by Lavelle Venture in Bangalore.",
     images: [
       {
-        url: "/images/og-image.jpg", // 1200x630 recommended
+        url: "https://lavelleventure.com/images/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Lavelle Venture Premium Real Estate",
@@ -100,7 +90,7 @@ export const metadata: Metadata = {
     title: "Lavelle Venture | Premium Real Estate",
     description:
       "Luxury real estate venture where peace meets modern architecture.",
-    images: ["/images/og-image.jpg"],
+    images: ["https://lavelleventure.com/images/og-image.jpg"],
   },
 
   alternates: {
@@ -111,7 +101,7 @@ export const metadata: Metadata = {
 };
 
 /* =========================
-   VIEWPORT (Required for themeColor)
+   VIEWPORT
 ========================= */
 
 export const viewport: Viewport = {
@@ -134,6 +124,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* 🔥 Google Organization Structured Data (For Logo in Search) */}
+        <Script
+          id="organization-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Lavelle Venture",
+              url: "https://lavelleventure.com",
+              logo: "https://lavelleventure.com/images/iconlogo.png",
+              sameAs: [],
+            }),
+          }}
+        />
+
         <Navbar />
         <FloatingContact />
         <main>{children}</main>

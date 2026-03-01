@@ -4,7 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: "https://lavelleventure.com",
-      lastModified: new Date(),
+      lastModified: new Date("2026-02-28"),
       changeFrequency: "monthly",
       priority: 1,
     },
