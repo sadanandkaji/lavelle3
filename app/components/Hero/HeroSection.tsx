@@ -129,7 +129,7 @@ export default function HeroSection() {
               className={`block object-contain transition-all ${isFullScreen ? "w-full h-full" : "w-full h-auto"}`}
               controls={isFullScreen} // Native seekbar only in fullscreen
             >
-              <source src="/videos/Yagnaeshwari full video.mp4" type="video/mp4" />
+              <source src="/videos/Yagnaeshwarifullvideo.mp4" type="video/mp4" />
             </video>
           </div>
         </div>
