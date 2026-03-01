@@ -99,7 +99,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lavelle Venture | Premium Real Estate",
     description:
-      "Luxury real estate ventures where peace meets modern architecture.",
+      "Luxury real estate venture where peace meets modern architecture.",
     images: ["/images/og-image.jpg"],
   },
 

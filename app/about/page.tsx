@@ -58,7 +58,7 @@ export default function AboutPage() {
             transition={{ delay: 0.3, duration: 1 }}
             className="text-base sm:text-lg md:text-xl text-neutral-600 font-light leading-relaxed max-w-3xl mx-auto"
           >
-            Lavelle Ventures is a Bangalore-based real estate development firm
+            Lavelle Venture is a Bangalore-based real estate development firm
             committed to creating high-value residential communities rooted in
             sustainability, spiritual harmony, and long-term investment growth.
             We focus on premium plotted developments and thoughtfully planned

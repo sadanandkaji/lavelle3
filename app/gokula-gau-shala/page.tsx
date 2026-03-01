@@ -1,9 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 export default function GauShalaPage() {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
   const features = [
     { title: "Desi Breeds", label: "Preservation", desc: "Home to indigenous Indian cattle breeds, maintained with traditional Vedic care and modern hygiene." },
     { title: "Sattvic Energy", label: "Vibration", desc: "The presence of the Gau Shala creates a natural sanctuary of peace, grounding the estate's spiritual energy." },
@@ -26,12 +29,10 @@ export default function GauShalaPage() {
           Your browser does not support the video tag.
         </video>
         
-        {/* Soft morning-light overlay */}
         <div className="absolute inset-0 bg-white/10" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <motion.span 
-          
             transition={{ duration: 1 }}
             className="text-[10px] text-white uppercase font-bold mb-4 drop-shadow-md"
           >
@@ -71,9 +72,22 @@ export default function GauShalaPage() {
             <p className="text-neutral-600 text-lg font-light leading-relaxed mb-6">
               In Vedic tradition, the cow is revered as the mother of all beings. The Gokula Gau Shāla is not just a farm; it is an integral part of the Peeta’s spiritual ecosystem. 
             </p>
-            <p className="text-neutral-600 text-lg font-light leading-relaxed">
-              The health and happiness of our cows are believed to directly impact the energetic purity of the temple. Here, ancient "Go-Vigyan" (Cow Science) meets compassionate care, ensuring a life of dignity for the guardians of our land.
-            </p>
+            
+            {/* CLICKABLE IMAGE COMPONENT */}
+            <div 
+              className="relative mt-10 group cursor-pointer overflow-hidden rounded-sm shadow-xl"
+              onClick={() => setIsFullScreen(true)}
+            >
+              <img 
+                src="/images/farmimage.jpg" 
+                alt="Gokula Gau Shala" 
+                className="w-full h-[300px] object-cover transition-transform duration-1000 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
+              <div className="absolute bottom-4 left-4">
+                <p className="text-[10px] text-white uppercase tracking-[0.2em] font-bold drop-shadow-md">View Gallery +</p>
+              </div>
+            </div>
           </motion.div>
 
           <motion.div 
@@ -149,6 +163,42 @@ export default function GauShalaPage() {
           </span>
         </Link>
       </section>
+
+      {/* --- FULL SCREEN IMAGE OVERLAY --- */}
+      <AnimatePresence>
+        {isFullScreen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-neutral-950/95 flex items-center justify-center p-4 md:p-12"
+          >
+            {/* Close Button */}
+            <button 
+                onClick={() => setIsFullScreen(false)}
+                className="absolute top-6 right-6 text-white z-[110] flex items-center gap-3 group"
+            >
+                <span className="text-[10px] tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 transition-all">Close View</span>
+                <div className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center group-hover:border-white transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            </button>
+
+            {/* Display Image */}
+            <motion.img 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 200 }}
+              src="/images/farmimage.jpg" 
+              className="max-w-full max-h-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+              alt="Gau Shala Full View"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

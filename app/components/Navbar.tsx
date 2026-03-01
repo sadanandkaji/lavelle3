@@ -52,7 +52,7 @@ export default function Navbar() {
     { title: "Lake", href: "/lake" },
     { title: "Holistic Center", href: "/holistic-center" },
     { title: "Theatre", href: "/theatre" },
-    { title: "Amenities", href: "/amenities" },
+    { title: "School", href: "/school" },
     { title: "Birds Aviary", href: "/birds-aviary" },
     { title: "Landscape Garden", href: "/landscape" },
   ];
@@ -64,13 +64,13 @@ if (!mounted) return <div className="h-16 w-full fixed top-0 bg-white md:bg-tran
         initial={{ y: 0, opacity: 1 }}
         className={`fixed top-0 left-0 w-full z-[100] flex items-center px-6 md:px-16 transition-all duration-500 border-b
           ${(isScrolled || isSolidPage)
-            ? "h-22 bg-white shadow-md border-black/5" 
-            : "h-22 bg-white md:bg-transparent border-black/5 md:border-white/20" 
+            ? "h-18 bg-white shadow-md border-black/5" 
+            : "h-18 bg-white md:bg-transparent border-black/5 md:border-white/20" 
           }
         `}
       >
         <div className="max-w-[1800px] mx-auto w-full flex items-center justify-between">
-          <Link href="/" className="relative h-40 w-48 md:h-42 md:w-60 transition-all duration-500 -ml-10 md:-ml-15 mt-2">
+          <Link href="/" className="relative h-40 w-48 md:h-34 md:w-60 transition-all duration-500 -ml-14 md:-ml-20 mt-2">
             <Image
               src="/images/lavelleventurelogo.png"
               alt="Lavelle Venture"

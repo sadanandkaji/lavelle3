@@ -1,8 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image"; // Recommended for Next.js
 
 export default function CottagePage() {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
   const features = [
     {
       title: "The Serene Lake",
@@ -33,7 +37,6 @@ export default function CottagePage() {
           Your browser does not support the video tag.
         </video>
         
-        {/* Dark Overlay for text readability */}
         <div className="absolute inset-0 bg-black/30" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
@@ -55,7 +58,6 @@ export default function CottagePage() {
           </motion.h1>
         </div>
 
-        {/* Scroll Indicator */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -71,7 +73,6 @@ export default function CottagePage() {
       <section className="max-w-[1400px] mx-auto px-6 py-24 md:py-40">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
-          {/* Left Side: Large Title */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -85,12 +86,22 @@ export default function CottagePage() {
               Where the soul finds <br /> 
               <span className="italic text-neutral-500">its natural rhythm.</span>
             </h3>
+            
+            {/* --- CLICKABLE IMAGE --- */}
+            <div className="mt-12 group cursor-pointer overflow-hidden rounded-sm" onClick={() => setIsFullScreen(true)}>
+                <img 
+                    src="/images/cottageimage.jpg" 
+                    alt="The Cottage View" 
+                    className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <p className="mt-3 text-[10px] uppercase tracking-widest text-neutral-400">Click to expand view</p>
+            </div>
+
             <p className="mt-8 text-neutral-600 leading-relaxed max-w-md">
               The Cottages at Eshwari Farms are more than just accommodations; they are integrated ecosystems designed to bring you back to nature without compromising on modern elegance.
             </p>
           </motion.div>
 
-          {/* Right Side: Detailed Features */}
           <div className="flex flex-col gap-12">
             {features.map((feature, idx) => (
               <motion.div
@@ -112,7 +123,39 @@ export default function CottagePage() {
         </div>
       </section>
 
-    
+      {/* --- FULL SCREEN OVERLAY --- */}
+      <AnimatePresence>
+        {isFullScreen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black flex items-center justify-center p-4 md:p-10"
+          >
+            {/* Close Button */}
+            <button 
+                onClick={() => setIsFullScreen(false)}
+                className="absolute top-8 right-8 text-white z-[110] group flex items-center gap-2"
+            >
+                <span className="text-[10px] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Close</span>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+            </button>
+
+            {/* Large Image */}
+            <motion.img 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              src="/images/cottageimage.jpg" 
+              className="max-w-full max-h-full object-contain shadow-2xl"
+              alt="Cottage Full Screen"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

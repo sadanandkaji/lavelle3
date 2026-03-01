@@ -1,9 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 export default function TripuraEshwariPage() {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
   const qualities = [
     { title: "Sṛṣṭi", label: "Creation", desc: "The primordial source from which all matter and consciousness emerge." },
     { title: "Sthiti", label: "Sustenance", desc: "The nurturing force that maintains the harmony of the universe." },
@@ -26,12 +29,10 @@ export default function TripuraEshwariPage() {
           Your browser does not support the video tag.
         </video>
         
-        {/* Soft light wash for high-end feel */}
         <div className="absolute inset-0 bg-white/10" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <motion.span 
-         
             transition={{ duration: 1 }}
             className="text-[10px] text-white uppercase font-bold mb-4 drop-shadow-md"
           >
@@ -90,8 +91,25 @@ export default function TripuraEshwariPage() {
             <p>
               Tripura Eshwari Peetam is the innermost sanctum of the estate—the <strong>Bindu</strong> from which the entire energy of Eshwari Siddha Peeta radiates. 
             </p>
+            
+            {/* CLICKABLE IMAGE BOX */}
+            <div 
+              className="relative group cursor-pointer overflow-hidden rounded-sm border border-neutral-200"
+              onClick={() => setIsFullScreen(true)}
+            >
+              <img 
+                src="/images/peethaimage.jpg" 
+                alt="The Sacred Peeta" 
+                className="w-full h-[400px] object-cover transition-transform duration-1000 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all duration-500" />
+              <div className="absolute bottom-6 left-6">
+                 <span className="text-[9px] tracking-[0.3em] text-white uppercase font-bold drop-shadow-lg bg-black/20 px-3 py-1 backdrop-blur-sm">Expand Sacred View</span>
+              </div>
+            </div>
+
             <p>
-              She is worshipped not merely as a deity in stone, but as the <strong>Living Consciousness</strong> that governs the Śrīcakra. Her presence is the culmination of the seeker's journey through the Avaraṇas, representing the union of the individual soul with the Universal Divine.
+              She is worshipped not merely as a deity in stone, but as the <strong>Living Consciousness</strong> that governs the Śrīcakra.
             </p>
           </motion.div>
 
@@ -167,6 +185,42 @@ export default function TripuraEshwariPage() {
           </span>
         </Link>
       </section>
+
+      {/* --- FULL SCREEN OVERLAY --- */}
+      <AnimatePresence>
+        {isFullScreen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-neutral-950 flex items-center justify-center p-4 md:p-12"
+          >
+            {/* Elegant Close Button */}
+            <button 
+                onClick={() => setIsFullScreen(false)}
+                className="absolute top-8 right-8 text-white z-[110] flex items-center gap-3 group"
+            >
+                <span className="text-[10px] tracking-[0.4em] uppercase opacity-0 group-hover:opacity-100 transition-all duration-300">Close</span>
+                <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center group-hover:border-white group-hover:rotate-90 transition-all duration-500">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            </button>
+
+            {/* Sacred Image */}
+            <motion.img 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 120 }}
+              src="/images/peethaimage.jpg" 
+              className="max-w-full max-h-full object-contain shadow-2xl shadow-[#B38728]/10"
+              alt="Tripura Eshwari Peeta Full View"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

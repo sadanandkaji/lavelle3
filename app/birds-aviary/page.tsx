@@ -131,12 +131,12 @@ export default function BirdsAviaryPage() {
       {/* --- NAVIGATION FOOTER --- */}
       <section className="py-32 text-center border-t border-neutral-50 bg-[#FBFBFA]">
         <Link 
-          href="/amenities"
+          href="/school"
           className="inline-flex flex-col items-center group"
         >
           <span className="text-[10px] tracking-[0.4em] text-neutral-400 uppercase mb-4 group-hover:text-[#B38728] transition-colors">Return to Development</span>
           <span className="text-4xl md:text-5xl font-serif italic text-neutral-800 border-b border-transparent group-hover:border-[#B38728] pb-2 transition-all duration-500">
-            Amenities
+            school
           </span>
         </Link>
       </section>

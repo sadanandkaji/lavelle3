@@ -17,19 +17,19 @@ export default function HeroCards({
   const cards = [
     {
       ref: gardenRef,
-      sectionTitle: "Garden Sanctuary",
+      sectionTitle: "yogini temple",
       category: "Exterior Architecture",
       img: "/images/templefarview.png",
       href: "/64-yogini-temple", // Updated Route
-      desc: "An exploration of interior depth and transcendental architecture. This sanctuary is designed as a retreat from the external world — a space where proportion and silence coexist."
+      desc: "The world’s largest Sri Chakra sanctuary integrates the Asta Mathruka and 64 Yoginis into a transcendental retreat where sacred architecture and silence coexist to explore interior depth."
     },
     {
       ref: sportsRef,
-      sectionTitle: "Athletic Club",
+      sectionTitle: "sri vidya mandira",
       category: "Private Enclave",
       img: "/images/tenniscourt.png",
-      href: "/amenities", // Updated Route
-      desc: "A seamless integration of recreation and architectural refinement. This private athletic enclave redefines performance through space, proportion, and atmosphere."
+      href: "/school", // Updated Route
+      desc: "Sri Vidya Mandira is a values-based school rooted in tradition, focusing on holistic child development. We blend cultural heritage, skill-based learning, and human values to nurture confident, compassionate, and capable individuals."
     },
     {
       ref: poolRef,

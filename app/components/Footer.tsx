@@ -19,7 +19,7 @@ export default function Footer() {
                 Lavelle
               </span>
               <span className="text-sm tracking-[0.4em] uppercase text-stone-400 mt-1 font-medium">
-                Ventures
+                Venture
               </span>
             </div>
             
@@ -88,7 +88,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-stone-100 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-stone-400 text-[10px] tracking-widest uppercase font-medium">
-            © 2026 Lavelle Ventures. All rights reserved.
+            © 2026 Lavelle Venture. All rights reserved.
           </p>
           <div className="flex gap-8">
             <Link href="#" className="text-stone-400 hover:text-[#B38728] text-[10px] tracking-widest uppercase transition-colors font-medium">Privacy</Link>
