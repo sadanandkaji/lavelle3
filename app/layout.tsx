@@ -35,6 +35,13 @@ export const metadata: Metadata = {
 
   keywords: [
     "Lavelle Venture",
+    "Lavelle",
+    "Lavelle Real Estate",
+    "Lavelle Venture Bangalore",
+    "Real Estate Bangalore",
+    "peaceful real estate Bangalore",
+    "nature-inspired homes Bangalore",
+    "sustainable real estate Bangalore",
     "Real Estate Bangalore",
     "Luxury Villas Bangalore",
     "Modern Architecture Homes",

@@ -27,13 +27,13 @@ export default function HeroCards({
       ref: sportsRef,
       sectionTitle: "sri vidya mandira",
       category: "Private Enclave",
-      img: "/images/tenniscourt.png",
+      img: "/images/vidyamadirimage.jpg",
       href: "/school", // Updated Route
       desc: "Sri Vidya Mandira is a values-based school rooted in tradition, focusing on holistic child development. We blend cultural heritage, skill-based learning, and human values to nurture confident, compassionate, and capable individuals."
     },
     {
       ref: poolRef,
-      sectionTitle: "Dairy Farm",
+      sectionTitle: "gau shala",
       category: "Pastoral Heritage",
       img: "/images/diaryoutside.png",
       href: "/gokula-gau-shala", // Updated Route
