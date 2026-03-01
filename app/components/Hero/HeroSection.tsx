@@ -58,7 +58,7 @@ export default function HeroSection() {
       {/* HERO VIDEO SECTION */}
       <div className="relative h-screen w-full overflow-hidden">
         <video autoPlay muted loop playsInline preload="metadata" className="w-full h-full object-cover">
-          <source src={typeof window !== "undefined" && window.innerWidth < 768 ? "/videos/lavelle-mobile.mp4" : "/videos/lavellefirstscene.mp4"} type="video/mp4" />
+          <source src={typeof window !== "undefined" && window.innerWidth < 768 ? "/videos/lavellefirstscene.mp4" : "/videos/lavellefirstscene.mp4"} type="video/mp4" />
         </video>
         <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6 bg-black/10">
           <HeroIntro />
