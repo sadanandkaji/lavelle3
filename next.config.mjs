@@ -1,13 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 1. Move the setting from experimental to top-level
+  // Move LanceDB to stable serverExternalPackages
   serverExternalPackages: ["@lancedb/lancedb"],
-
-  // 2. Silence the Turbopack/Webpack warning by adding an empty turbopack config
-  // (Turbopack handles most things automatically now)
-  experimental: {
-    turbopack: {},
-  },
+  
+  // Remove the experimental turbopack key entirely.
+  // Next 16 handles it automatically.
 };
 
 export default nextConfig;
