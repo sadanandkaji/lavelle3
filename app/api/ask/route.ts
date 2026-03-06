@@ -2,17 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import * as lancedb from "@lancedb/lancedb";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// 1. Setup Configuration
+// 1. Configuration
 const DB_PATH = "./lancedb";
 const TABLE_NAME = "docs";
 const TOP_K = 8;
 
-// Initialize Gemini SDK
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
-    // 2. Parse Request Body
     const body = await req.json();
     const { question } = body;
 
@@ -20,61 +18,58 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Question required" }, { status: 400 });
     }
 
-    console.log("Processing Question:", question);
+    console.log("🔍 Processing Question:", question);
 
-    // 3. Connect to LanceDB
+    // 2. Database Connection
     const db = await lancedb.connect(DB_PATH);
     const table = await db.openTable(TABLE_NAME);
 
-    // 4. Create Embedding for the user's question
-    // Ensure this model matches the one used in scripts/ingest.ts
+    // 3. Embedding (Match your ingest model)
     const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
     const embedResult = await embedModel.embedContent(question);
     const queryVector = embedResult.embedding.values;
 
-    // 5. Perform Vector Search
+    // 4. Vector Search
     const searchResults = await table
       .search(queryVector)
       .limit(TOP_K)
       .toArray();
 
-    // Extract text and sources for the LLM context
     const context = searchResults.map((r) => r.text).join("\n\n");
-    const sources = [...new Set(searchResults.map((r) => r.source))]; // Unique sources
+    const sources = [...new Set(searchResults.map((r) => r.source))];
 
-    // 6. Generate Answer using the Context
+    // 5. LLM Answer Generation
+    // Using gemini-1.5-flash-latest for speed and reliability
     const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
-You are an AI assistant that answers questions using the provided documents.
+You are an AI assistant for Lavelle Venture. Answer based ONLY on the context provided.
 
-Rules:
-1. If the answer exists directly in the context, return it clearly.
-2. If the answer requires a calculation (example yearly → monthly), compute it.
-3. Use ONLY the provided context.
-4. If the answer can be presented as multiple items or data points, format each item as a separate bullet point using "-" (dash) or new lines.
-5. If the answer cannot be found, say: "I could not find the answer in the documents."
+RULES:
+1. BOOKING/CONTACT: If the user asks how to book, buy land, or contact the team, you MUST provide this link: https://lavelleventure.com/contact.
+2. CALCULATIONS: If asked for financial breakdowns (e.g., yearly income to monthly), show the math.
+3. STRICTNESS: If the answer isn't in the context, say: "I could not find the answer in the documents."
+4. FORMAT: Use "-" bullet points for lists. Use **bold** for key terms.
 
-Context:
+CONTEXT:
 ${context}
 
-Question:
+QUESTION:
 ${question}
 
-Answer:
+ANSWER:
 `;
 
     const result = await chatModel.generateContent(prompt);
     const responseText = result.response.text();
 
-    // 7. Return Response
     return NextResponse.json({
       answer: responseText,
       sources: sources
     });
 
   } catch (error: any) {
-    console.error("RAG Error:", error);
+    console.error("❌ RAG Error Details:", error);
     return NextResponse.json(
       { error: "Server error", details: error.message },
       { status: 500 }

@@ -2,16 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 
-type Message = {
-  type: "user" | "bot";
-  text: string;
-};
-
-type Template = {
-  id: number;
-  label: string;
-  query: string;
-};
+type Message = { type: "user" | "bot"; text: string };
+type Template = { id: number; label: string; query: string };
 
 export default function ChatModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [messages, setMessages] = useState<Message[]>([
@@ -20,9 +12,9 @@ export default function ChatModal({ isOpen, onClose }: { isOpen: boolean; onClos
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [availableTemplates, setAvailableTemplates] = useState<Template[]>([
-    { id: 1, label: "🏢 About Lavelle Venture", query: "What is Lavelle Venture and their contact details?" },
-    { id: 2, label: "📐 Plot Overview", query: "Give me an overview of an individual plot size, dimensions, and farmhouse details." },
-    { id: 3, label: "🌳 Full Farm Information", query: "Tell me about the full farm project: total acres, total plots, and the plantation model." },
+    { id: 1, label: "🏢 About Us", query: "What is Lavelle Venture and their contact details?" },
+    { id: 2, label: "📐 Plot Sizes", query: "Give me an overview of plot size and farmhouse details." },
+    { id: 3, label: "📅 How to Book", query: "How can I book a plot?" },
   ]);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -35,18 +27,15 @@ export default function ChatModal({ isOpen, onClose }: { isOpen: boolean; onClos
     const messageToSend = queryText || input;
     if (!messageToSend.trim()) return;
 
-    // Remove the template button once clicked
     if (templateId) {
       setAvailableTemplates((prev) => prev.filter((t) => t.id !== templateId));
     }
 
-    const userMessage: Message = { type: "user", text: messageToSend };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, { type: "user", text: messageToSend }]);
     setInput("");
     setLoading(true);
 
     try {
-      // Updated to point to your Next.js API route
       const response = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,123 +43,129 @@ export default function ChatModal({ isOpen, onClose }: { isOpen: boolean; onClos
       });
 
       const data = await response.json();
-
-      if (data.answer) {
-        setMessages((prev) => [...prev, { type: "bot", text: data.answer }]);
-      } else {
-        throw new Error("No answer received");
-      }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { type: "bot", text: "❌ I'm having trouble connecting to the server. Please try again later." },
-      ]);
+      setMessages((prev) => [...prev, { type: "bot", text: data.answer || "No response." }]);
+    } catch {
+      setMessages((prev) => [...prev, { type: "bot", text: "❌ Connection error." }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatBold = (content: string) => {
-    return content.split(/(\*\*.*?\*\*)/g).map((part, i) => (
-      part.startsWith("**") && part.endsWith("**") 
-        ? <strong key={i} className="font-bold text-[#1b4332]">{part.slice(2, -2)}</strong> 
-        : part
-    ));
+  const formatMessage = (content: string) => {
+    const parts = content.split(/(\*\*.*?\*\*|https?:\/\/[^\s]+)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={i} className="font-bold text-[#1b4332]">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith("http")) {
+        return <a key={i} href={part} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all">{part}</a>;
+      }
+      return part;
+    });
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-end p-4 md:p-6 bg-black/40 backdrop-blur-sm transition-all">
-      <div className="flex flex-col w-full max-w-[400px] h-[80vh] max-h-[600px] bg-white shadow-2xl rounded-3xl overflow-hidden relative border border-stone-300 animate-in slide-in-from-bottom-5 duration-300">
-        
-        {/* Header */}
-        <header className="bg-[#1b4332] text-white p-4 flex items-center justify-between shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center font-bold border border-white/10 text-white">LV</div>
-            <div>
-              <h1 className="font-bold text-sm tracking-wide">Lavelle Assistant</h1>
-              <p className="text-[10px] opacity-90 flex items-center gap-1.5 uppercase tracking-widest font-medium">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> 
-                Ready to Help
-              </p>
+  /* CONTAINER: top-[70px] keeps navbar visible. 
+    p-3 ensures the chat doesn't touch the phone edges.
+  */
+  <div className="fixed top-[70px] left-0 right-0 bottom-0 z-[100] flex items-end justify-end p-3 sm:p-4 md:p-6 transition-all pointer-events-none">
+    
+    <div className="
+      flex flex-col 
+      w-full h-full 
+      sm:max-w-[400px] sm:h-[600px] sm:max-h-[80vh] 
+      bg-white 
+      rounded-[2.5rem] /* Extra rounded corners for a modern mobile look */
+      shadow-2xl 
+      overflow-hidden 
+      relative 
+      border border-stone-200
+      animate-in slide-in-from-bottom-5 duration-300 
+      pointer-events-auto
+    ">
+      
+      {/* Header - Added slightly more padding for the rounded look */}
+      <header className="bg-[#1b4332] text-white p-5 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center font-bold border border-white/10">LV</div>
+          <div>
+            <h1 className="font-bold text-sm tracking-wide">Lavelle Assistant</h1>
+            <p className="text-[10px] opacity-90 flex items-center gap-1.5 uppercase tracking-widest font-medium">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> 
+              Online
+            </p>
+          </div>
+        </div>
+        <button onClick={onClose} className="hover:bg-white/10 p-2 rounded-full transition-colors active:scale-90">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </header>
+
+      {/* Chat Body */}
+      <main 
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#fcfcf9] relative"
+        style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' }}
+      >
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`p-4 rounded-[1.5rem] max-w-[88%] sm:max-w-[85%] text-[14px] leading-relaxed shadow-sm border ${
+              msg.type === "user" 
+                ? "bg-[#2d6a4f] text-white rounded-tr-none border-transparent" 
+                : "bg-white text-gray-800 rounded-tl-none border-stone-200"
+            }`}>
+              {msg.text.split("\n").map((line, j) => (
+                <p key={j} className="mb-1 last:mb-0">{formatMessage(line)}</p>
+              ))}
             </div>
           </div>
-          <button 
-            onClick={onClose} 
-            className="hover:bg-white/10 p-2 rounded-full transition-colors active:scale-90"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-        </header>
-
-        {/* Chat Body */}
-        <main 
-          className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#fcfcf9] relative scrollbar-thin scrollbar-thumb-stone-300"
-          style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' }}
-        >
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`p-3.5 rounded-2xl max-w-[85%] text-[13.5px] leading-relaxed shadow-sm transition-all ${
-                msg.type === "user" 
-                  ? "bg-[#2d6a4f] text-white rounded-tr-none" 
-                  : "bg-white text-gray-800 rounded-tl-none border border-stone-200"
-              }`}>
-                {msg.type === "bot" 
-                  ? msg.text.split("\n").map((line, j) => <p key={j} className="mb-1.5 last:mb-0">{formatBold(line)}</p>) 
-                  : msg.text
-                }
-              </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-white px-5 py-3 rounded-2xl rounded-tl-none shadow-sm flex gap-1.5 border border-stone-200">
+              <div className="w-2 h-2 bg-[#2d6a4f]/40 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-[#2d6a4f]/60 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+              <div className="w-2 h-2 bg-[#2d6a4f] rounded-full animate-bounce [animation-delay:0.4s]"></div>
             </div>
-          ))}
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-white px-4 py-3 rounded-2xl rounded-tl-none shadow-sm flex gap-1.5 border border-stone-200">
-                <div className="w-2 h-2 bg-[#2d6a4f]/40 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-[#2d6a4f]/60 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                <div className="w-2 h-2 bg-[#2d6a4f] rounded-full animate-bounce [animation-delay:0.4s]"></div>
-              </div>
-            </div>
-          )}
-          <div ref={bottomRef} />
-        </main>
-
-        {/* Templates Area */}
-        {availableTemplates.length > 0 && (
-          <div className="p-3 bg-white border-t border-stone-100 flex flex-wrap gap-2">
-            {availableTemplates.map((t) => (
-              <button 
-                key={t.id} 
-                onClick={() => sendMessage(t.id, t.query)} 
-                className="text-[11px] font-medium text-stone-700 bg-stone-50 hover:bg-[#2d6a4f] hover:text-white px-3.5 py-1.5 rounded-full border border-stone-200 transition-all active:scale-95"
-              >
-                {t.label}
-              </button>
-            ))}
           </div>
         )}
+        <div ref={bottomRef} className="h-2" />
+      </main>
 
-        {/* Footer */}
-        <footer className="p-4 bg-white flex gap-2 border-t border-stone-200 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-          <input 
-            value={input} 
-            onChange={(e) => setInput(e.target.value)} 
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()} 
-            placeholder="Type your message..." 
-            className="flex-1 bg-stone-100 rounded-xl px-4 py-2.5 text-sm text-black outline-none focus:ring-2 focus:ring-[#2d6a4f]/20 transition-all placeholder:text-stone-400" 
-          />
-          <button 
-            onClick={() => sendMessage()} 
-            disabled={loading || !input.trim()} 
-            className="bg-[#1b4332] text-white p-2.5 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#2d6a4f] transition-colors shadow-md active:scale-95"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </footer>
-      </div>
+      {/* Templates Area */}
+      {availableTemplates.length > 0 && (
+        <div className="px-4 py-3 bg-white border-t border-stone-100 flex overflow-x-auto no-scrollbar gap-2 shrink-0">
+          {availableTemplates.map((t) => (
+            <button 
+              key={t.id} 
+              onClick={() => sendMessage(t.id, t.query)} 
+              className="whitespace-nowrap text-[12px] font-semibold text-stone-700 bg-stone-50 hover:bg-[#2d6a4f] hover:text-white px-5 py-2 rounded-full border border-stone-200 transition-all active:scale-95 shadow-sm"
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Footer - Slightly larger padding for better thumb placement */}
+      <footer className="p-4 sm:p-5 bg-white flex gap-2 border-t border-stone-200 shrink-0 pb-6 sm:pb-5">
+        <input 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()} 
+          placeholder="Ask about your plot..." 
+          className="flex-1 bg-stone-100 rounded-2xl px-5 py-3 text-[16px] text-black outline-none focus:ring-1 focus:ring-[#2d6a4f]/30" 
+        />
+        <button 
+          onClick={() => sendMessage()} 
+          disabled={loading || !input.trim()} 
+          className="bg-[#1b4332] text-white p-3 rounded-2xl disabled:opacity-40 flex items-center justify-center transition-transform active:scale-90"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </footer>
     </div>
-  );
+  </div>
+);
 }
