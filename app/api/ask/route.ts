@@ -57,14 +57,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Malformed signed message" }, { status: 400 });
     }
 
-    const question = fullDecodedMsg.slice(0, separatorIndex);
-    const signedToken = fullDecodedMsg.slice(separatorIndex + 2);
+    const question = fullDecodedMsg.slice(0, separatorIndex).trim();
+    const signedToken = fullDecodedMsg.slice(separatorIndex + 2).trim();
 
     if (signedToken !== token) {
       return NextResponse.json({ error: "Token mismatch in signature" }, { status: 401 });
     }
 
     console.log("🔍 Question Verified:", question);
+
+    // ----- Handle Greetings only for standalone greetings -----
+    const greetings = ["hi", "hello", "hey", "greetings"];
+    const normalizedQuestion = question.toLowerCase().replace(/[^\w\s]/g, "").trim();
+
+    // Only respond if the entire message is exactly a greeting
+    if (greetings.includes(normalizedQuestion)) {
+      return NextResponse.json({ answer: "Hello! How can I help you today?" });
+    }
 
     // 5. Connect to LanceDB
     const db = await lancedb.connect(DB_PATH);
