@@ -1,3 +1,4 @@
+// app/api/ask/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { validTokens } from "./validTokens";
 import * as lancedb from "@lancedb/lancedb";
@@ -7,56 +8,89 @@ import { decodeBase64 } from "tweetnacl-util";
 
 const DB_PATH = "./lancedb";
 const TABLE_NAME = "docs";
+const TOP_K = 8;
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    // Use 'token' as the primary key
     const { signedMessage, publicKey, token } = body;
 
+    // 1. Basic Validation
     if (!signedMessage || !publicKey || !token) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing signedMessage, publicKey or token" },
+        { status: 400 }
+      );
     }
 
-    // 1. Validate and Delete Token (Atomic-like check)
+    // 2. Token Validation
     const tokenData = validTokens.get(token);
-    if (!tokenData || tokenData.expires < Date.now()) {
+
+    if (!tokenData) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
     }
-    validTokens.delete(token); // Prevent replay
 
-    // 2. Verify Signature
+    if (tokenData.expires < Date.now()) {
+      validTokens.delete(token);
+      return NextResponse.json({ error: "Token expired" }, { status: 401 });
+    }
+
+    // Delete immediately to prevent replay attacks
+    validTokens.delete(token);
+
+    // 3. Signature Verification
     const signedBytes = decodeBase64(signedMessage);
     const pubKeyBytes = decodeBase64(publicKey);
     const msgUint8 = nacl.sign.open(signedBytes, pubKeyBytes);
-    
-    if (!msgUint8) return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
 
-    // 3. Extract Question (Server signs "question::token")
+    if (!msgUint8) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    // 4. Extract Question and Token from Signed Message
     const fullDecodedMsg = new TextDecoder().decode(msgUint8);
     const separatorIndex = fullDecodedMsg.lastIndexOf("::");
-    const question = fullDecodedMsg.slice(0, separatorIndex);
 
-    // 4. RAG Logic
+    if (separatorIndex === -1) {
+      return NextResponse.json({ error: "Malformed signed message" }, { status: 400 });
+    }
+
+    const question = fullDecodedMsg.slice(0, separatorIndex);
+    const signedToken = fullDecodedMsg.slice(separatorIndex + 2);
+
+    if (signedToken !== token) {
+      return NextResponse.json({ error: "Token mismatch in signature" }, { status: 401 });
+    }
+
+    console.log("🔍 Question Verified:", question);
+
+    // 5. Connect to LanceDB
     const db = await lancedb.connect(DB_PATH);
     const table = await db.openTable(TABLE_NAME);
 
+    // 6. Embed Question
     const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
     const embedResult = await embedModel.embedContent(question);
-    
-    const searchResults = await table.search(embedResult.embedding.values).limit(8).toArray();
-    const context = searchResults.map(r => r.text).join("\n\n");
+    const queryVector = embedResult.embedding.values;
 
+    // 7. Vector Search
+    const searchResults = await table.search(queryVector).limit(TOP_K).toArray();
+    const context = searchResults.map((r) => r.text).join("\n\n");
+    const sources = [...new Set(searchResults.map((r) => r.source))] as string[];
+
+    // 8. Generate Answer
     const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-const prompt = `
+
+    const prompt = `
 You are an AI assistant for Lavelle Venture. Answer based ONLY on the context provided.
 
 RULES:
-1. BOOKING/CONTACT: Provide this link if user asks how to book: https://lavelleventure.com/contact
-2. CALCULATIONS: Show math if asked.
-3. STRICTNESS: If answer isn't in context, say: "I could not find the answer in the documents."
-4. FORMAT: Use "-" for lists and **bold** for key terms.
+1. BOOKING/CONTACT: If the user asks how to book, buy land, or contact the team, you MUST provide this link: https://lavelleventure.com/contact
+2. CALCULATIONS: If asked for financial breakdowns (e.g., yearly income to monthly), show the math.
+3. STRICTNESS: If the answer isn't in the context, say: "I could not find the answer in the documents."
+4. FORMAT: Use "-" bullet points for lists. Use **bold** for key terms.
 
 CONTEXT:
 ${context}
@@ -66,10 +100,18 @@ ${question}
 
 ANSWER:
 `;
-    const result = await chatModel.generateContent(prompt);
-    return NextResponse.json({ answer: result.response.text() });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: "Server error", details: error.message }, { status: 500 });
+    const result = await chatModel.generateContent(prompt);
+    const responseText = result.response.text();
+
+    return NextResponse.json({ answer: responseText });
+
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ /api/ask error:", message);
+    return NextResponse.json(
+      { error: "Server error", details: message },
+      { status: 500 }
+    );
   }
 }
